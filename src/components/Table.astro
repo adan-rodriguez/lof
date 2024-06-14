@@ -1,0 +1,72 @@
+---
+const EQUIPOS = {
+  racing: "Racing El Campesino",
+  407: "Juventud Km 407",
+  tacuarendi: "Deportivo Tacuarendí",
+  huracan: "Huracán",
+  fabrica: "Ocampo Fábrica",
+  itati: "Deportivo Itatí",
+  papelero: "Papelero",
+  exalumnos: "Ex Alumnos",
+  belgrano: "Belgrano",
+};
+const response = await fetch(
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vQGxBNPQZ0zfjNYAuhVtLdbpjtX9e8MgDmbz7L57JMOcrZFvwqIDkwgxaoA3lkrCIDtzdWV7zggb2vd/pub?output=csv"
+);
+const csv = await response.text();
+const data = csv
+  .split("\n")
+  .slice(1)
+  .map((row) => {
+    const [equipo, puntos, pj] = row.trim().split(",");
+    return { equipo: EQUIPOS[equipo], puntos, pj };
+  });
+console.log(data);
+const { caption } = Astro.props;
+---
+
+<table>
+  <caption>{caption}</caption>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Equipo</th>
+      <th>Puntos</th>
+      <th>PJ</th>
+    </tr>
+  </thead>
+  <tbody>
+    {
+      data.map((row, index) => (
+        <tr>
+          <td>{index + 1}</td>
+          <td>{row.equipo}</td>
+          <td>{row.puntos}</td>
+          <td>{row.pj}</td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>
+
+<small>
+  {JSON.stringify(data)}
+</small>
+
+<style>
+  table {
+    margin-inline: auto;
+    border: 1px solid black;
+
+    & th,
+    & td {
+      border: 1px solid black;
+    }
+  }
+
+  small {
+    position: absolute;
+    bottom: 1rem;
+    left: 0;
+  }
+</style>
